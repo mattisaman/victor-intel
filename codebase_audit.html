@@ -1,0 +1,1918 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Victor Codebase Audit — May 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Sora:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #09090e;
+    --surface:   #10111a;
+    --surface2:  #17192a;
+    --border:    rgba(255,255,255,0.11);
+    --blue:      #5b8dee;
+    --blue-dim:  rgba(91,141,238,0.15);
+    --blue-glow: rgba(91,141,238,0.07);
+    --text:      #eceaf8;
+    --muted:     #b4b4c6;
+    --dim:       #848496;
+    --gold:      #c9a04a;
+    --gold-dim:  rgba(201,160,74,0.15);
+    --red:       #8b3535;
+    --red-dim:   rgba(139,53,53,0.15);
+    --green:     #2d7a55;
+    --green-dim: rgba(45,122,85,0.15);
+    --amber:     #b87333;
+    --amber-dim: rgba(184,115,51,0.15);
+    --sidebar-w: 240px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.35;
+  }
+
+  /* ─── SIDEBAR ─── */
+  .sidebar {
+    position: fixed;
+    top: 0; left: 0;
+    width: var(--sidebar-w);
+    height: 100vh;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 2.5rem 0;
+    display: flex;
+    flex-direction: column;
+    z-index: 100;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    padding: 0 1.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.5rem;
+  }
+
+  .sidebar-logo .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .sidebar-logo .title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .sidebar-nav { list-style: none; padding: 0 0.75rem; flex: 1; }
+  .sidebar-nav li { margin-bottom: 2px; }
+
+  .sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    text-decoration: none;
+    color: var(--muted);
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+
+  .sidebar-nav a:hover, .sidebar-nav a.active {
+    color: var(--text);
+    background: var(--blue-dim);
+  }
+
+  .sidebar-nav a.active { color: var(--blue); }
+
+  .nav-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--dim);
+    min-width: 14px;
+  }
+
+  .sidebar-nav a.active .nav-num,
+  .sidebar-nav a:hover .nav-num { color: var(--blue); }
+
+  .sidebar-meta {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border);
+    font-size: 10px;
+    color: var(--dim);
+    line-height: 1.5;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .sidebar-meta a {
+    color: var(--blue);
+    text-decoration: none;
+    word-break: break-all;
+    font-size: 9px;
+  }
+
+  /* ─── MAIN ─── */
+  .main { margin-left: var(--sidebar-w); min-height: 100vh; }
+
+  /* ─── HERO ─── */
+  .hero {
+    position: relative;
+    padding: 5rem 5rem 4rem;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; right: -60px;
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(201,160,74,0.05) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero::after {
+    content: 'CODEBASE';
+    position: absolute;
+    bottom: -20px; right: 2rem;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 9rem;
+    font-weight: 300;
+    color: rgba(255,255,255,0.02);
+    letter-spacing: -0.02em;
+    pointer-events: none;
+    line-height: 1;
+    user-select: none;
+  }
+
+  .hero-meta { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+    border-radius: 2px;
+  }
+
+  .badge-blue {
+    color: var(--blue);
+    background: var(--blue-dim);
+    border: 1px solid rgba(91,141,238,0.3);
+  }
+
+  .badge-gold {
+    color: var(--gold);
+    background: var(--gold-dim);
+    border: 1px solid rgba(201,160,74,0.3);
+  }
+
+  .badge-red {
+    color: #c05050;
+    background: var(--red-dim);
+    border: 1px solid rgba(139,53,53,0.3);
+  }
+
+  .badge-amber {
+    color: var(--amber);
+    background: var(--amber-dim);
+    border: 1px solid rgba(184,115,51,0.3);
+  }
+
+  .hero-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+  }
+
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+    max-width: 700px;
+  }
+
+  .hero h1 em { font-style: italic; color: var(--gold); }
+
+  .hero-sub {
+    font-size: 14px;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.7;
+    border-left: 2px solid var(--gold);
+    padding-left: 1rem;
+  }
+
+  .hero-repo {
+    margin-top: 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    text-decoration: none;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--blue);
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .hero-repo:hover { border-color: rgba(91,141,238,0.4); background: var(--blue-dim); }
+  .hero-repo-icon { opacity: 0.6; font-size: 13px; }
+
+  .hero-stats { display: flex; gap: 3rem; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--border); flex-wrap: wrap; }
+
+  .hero-stat .num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.8rem;
+    font-weight: 300;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .hero-stat .num.gold { color: var(--gold); }
+  .hero-stat .num.blue { color: var(--blue); }
+  .hero-stat .num.red { color: #c05050; }
+  .hero-stat .num.green { color: #4ab87a; }
+  .hero-stat .label { font-size: 11px; color: var(--muted); margin-top: 0.3rem; letter-spacing: 0.05em; }
+
+  /* ─── SECTIONS ─── */
+  .section { padding: 4rem 5rem; border-bottom: 1px solid var(--border); }
+
+  .section-header { display: flex; align-items: flex-start; gap: 2rem; margin-bottom: 3rem; }
+
+  .section-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 5rem;
+    font-weight: 300;
+    color: rgba(201,160,74,0.30);
+    line-height: 1;
+    min-width: 80px;
+    user-select: none;
+  }
+
+  .section-title-wrap { flex: 1; }
+
+  .section-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.2rem;
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--text);
+  }
+
+  .section-desc { font-size: 15px; color: var(--muted); margin-top: 0.75rem; max-width: 580px; line-height: 1.7; }
+
+  /* ─── HIGHLIGHT BOX ─── */
+  .highlight-box {
+    border-radius: 8px;
+    padding: 1.5rem 2rem;
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+
+  .highlight-box.blue { background: var(--blue-dim); border: 1px solid rgba(91,141,238,0.25); }
+  .highlight-box.gold { background: var(--gold-dim); border: 1px solid rgba(201,160,74,0.25); }
+  .highlight-box.amber { background: var(--amber-dim); border: 1px solid rgba(184,115,51,0.25); }
+  .highlight-box.red { background: var(--red-dim); border: 1px solid rgba(139,53,53,0.30); }
+  .highlight-box.green { background: var(--green-dim); border: 1px solid rgba(45,122,85,0.25); }
+
+  .highlight-box strong { color: var(--gold); }
+  .highlight-box.blue strong { color: var(--blue); }
+  .highlight-box.amber strong { color: var(--amber); }
+  .highlight-box.red strong { color: #c05050; }
+  .highlight-box.green strong { color: #4ab87a; }
+  .highlight-box code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: rgba(255,255,255,0.07);
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+  }
+
+  /* ─── STACK GRID ─── */
+  .stack-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 2rem;
+  }
+
+  .stack-item { background: var(--surface); padding: 1.25rem 1.5rem; }
+  .si-layer { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 0.3rem; }
+  .si-tech { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 0.2rem; }
+  .si-note { font-size: 11px; color: var(--muted); line-height: 1.4; }
+  .si-tech .live { color: var(--gold); font-size: 10px; font-family: 'JetBrains Mono', monospace; margin-left: 0.4rem; letter-spacing: 0.05em; }
+
+  /* ─── CALLOUT GRID ─── */
+  .callout-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 2.5rem;
+  }
+
+  .callout-item { background: var(--surface); padding: 1.5rem 2rem; }
+
+  .callout-item .ci-label {
+    font-size: 10px;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .callout-item .ci-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.3;
+  }
+
+  .callout-item .ci-value.gold { color: var(--gold); }
+  .callout-item .ci-value.blue { color: var(--blue); }
+  .callout-item .ci-value.red { color: #c05050; }
+  .callout-item .ci-value.green { color: #4ab87a; }
+  .callout-item .ci-value.amber { color: var(--amber); }
+
+  /* ─── TABLES ─── */
+  .table-wrap { overflow-x: auto; margin-bottom: 2rem; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+
+  thead th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  tbody tr { border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.15s; }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  tbody td { padding: 0.85rem 1rem; color: var(--text); vertical-align: middle; }
+
+  .cell-name { font-weight: 500; font-size: 14px; }
+  .cell-mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .cell-muted { color: var(--muted); font-size: 13px; }
+
+  .status-pill {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    white-space: nowrap;
+  }
+
+  .pill-green { background: var(--green-dim); color: #4ab87a; border: 1px solid rgba(45,122,85,0.25); }
+  .pill-amber { background: var(--amber-dim); color: #d4924a; border: 1px solid rgba(184,115,51,0.25); }
+  .pill-red { background: var(--red-dim); color: #c06060; border: 1px solid rgba(139,53,53,0.25); }
+  .pill-blue { background: var(--blue-dim); color: var(--blue); border: 1px solid rgba(91,141,238,0.25); }
+  .pill-gold { background: var(--gold-dim); color: var(--gold); border: 1px solid rgba(201,160,74,0.25); }
+  .pill-dim { background: rgba(255,255,255,0.05); color: var(--muted); border: 1px solid var(--border); }
+
+  tr.row-critical { background: rgba(139,53,53,0.04); }
+  tr.row-critical:hover { background: rgba(139,53,53,0.08); }
+  tr.row-good { background: rgba(45,122,85,0.04); }
+  tr.row-good:hover { background: rgba(45,122,85,0.07); }
+  tr.row-warn { background: rgba(184,115,51,0.04); }
+
+  /* ─── MODULE STATUS BLOCKS ─── */
+  .module-group { margin-bottom: 2.5rem; }
+
+  .module-group-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .module-group-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .module-group-label.functional { color: var(--gold); }
+  .module-group-label.coded { color: var(--blue); }
+  .module-group-label.missing { color: #c06060; }
+
+  .module-group-rule { flex: 1; height: 1px; background: var(--border); }
+
+  .module-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .module-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .module-card.functional { border-left: 3px solid var(--gold); }
+  .module-card.coded { border-left: 3px solid var(--blue); }
+  .module-card.missing { border-left: 3px solid var(--red); }
+
+  .mc-header {
+    padding: 1rem 1.25rem 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .mc-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.25;
+  }
+
+  .mc-body {
+    padding: 0 1.25rem 1.25rem;
+  }
+
+  .mc-features {
+    list-style: none;
+    margin-top: 0.5rem;
+  }
+
+  .mc-features li {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 0.25rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    gap: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .mc-features li:last-child { border-bottom: none; }
+  .mc-features li::before { content: '·'; color: var(--dim); flex-shrink: 0; }
+  .mc-features li.highlight { color: var(--text); font-weight: 500; }
+  .mc-features li.highlight::before { content: '→'; color: var(--gold); }
+
+  .mc-note {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.75rem;
+    background: rgba(255,255,255,0.03);
+    border-radius: 5px;
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .mc-note strong { color: var(--text); }
+  .mc-note.warn { background: var(--amber-dim); border: 1px solid rgba(184,115,51,0.15); }
+  .mc-note.warn strong { color: var(--amber); }
+  .mc-note.info { background: var(--blue-dim); border: 1px solid rgba(91,141,238,0.15); }
+  .mc-note.info strong { color: var(--blue); }
+  .mc-note.danger { background: var(--red-dim); border: 1px solid rgba(139,53,53,0.2); }
+  .mc-note.danger strong { color: #c05050; }
+
+  /* ─── WIDE MODULE CARD ─── */
+  .module-cards.one-col { grid-template-columns: 1fr; }
+
+  /* ─── GAP / CHECKLIST ITEMS ─── */
+  .gap-list { list-style: none; }
+
+  .gap-item {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--border);
+    border-left: 3px solid;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 8px;
+    background: var(--surface);
+    align-items: flex-start;
+    transition: background 0.2s;
+  }
+
+  .gap-item:hover { background: rgba(255,255,255,0.02); }
+  .gap-item.critical { border-left-color: var(--red); }
+  .gap-item.important { border-left-color: var(--amber); }
+  .gap-item.phase2 { border-left-color: var(--blue); opacity: 0.88; }
+  .gap-item.good { border-left-color: var(--green); }
+
+  .gap-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 300;
+    color: rgba(255,255,255,0.1);
+    line-height: 1;
+    min-width: 36px;
+    text-align: center;
+  }
+
+  .gap-body { flex: 1; }
+
+  .gap-title {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+    line-height: 1.4;
+  }
+
+  .gap-hours {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--blue);
+    float: right;
+    background: var(--blue-dim);
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    border: 1px solid rgba(91,141,238,0.2);
+    margin-left: 0.75rem;
+    margin-top: 2px;
+  }
+
+  .gap-desc { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+  .gap-desc strong { color: var(--text); }
+
+  /* ─── HOURS CARDS ─── */
+  .hours-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+
+  .hours-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .hours-card-header {
+    padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .hours-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .hours-total {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--gold);
+    background: var(--gold-dim);
+    padding: 0.2rem 0.6rem;
+    border-radius: 3px;
+    border: 1px solid rgba(201,160,74,0.2);
+  }
+
+  .hours-list { list-style: none; padding: 1rem 1.75rem 1.5rem; }
+
+  .hours-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    font-size: 12.5px;
+    color: var(--muted);
+    gap: 1rem;
+  }
+
+  .hours-list li:last-child { border-bottom: none; }
+  .hours-list .h-name { flex: 1; }
+  .hours-list .h-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .hours-summary {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1.5rem 2rem;
+    background: var(--gold-dim);
+    border: 1px solid rgba(201,160,74,0.2);
+    border-radius: 10px;
+    margin-top: 0.5rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .hs-item { text-align: center; min-width: 80px; }
+  .hs-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .hs-num.total { color: var(--text); }
+
+  .hs-label { font-size: 10px; color: var(--muted); margin-top: 0.25rem; letter-spacing: 0.05em; }
+  .hs-divider { width: 1px; background: rgba(201,160,74,0.2); align-self: stretch; }
+
+  /* ─── INSIGHT CARD ─── */
+  .insight-card {
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(201,160,74,0.04) 100%);
+    border: 1px solid rgba(201,160,74,0.22);
+    border-radius: 12px;
+    padding: 2.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .insight-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 1rem;
+    line-height: 1.3;
+  }
+
+  .insight-card h3 em { color: var(--gold); font-style: italic; }
+
+  .insight-card p { font-size: 13.5px; color: var(--muted); line-height: 1.8; margin-bottom: 0.75rem; }
+  .insight-card p strong { color: var(--text); }
+  .insight-card p:last-child { margin-bottom: 0; }
+
+  .insight-card.blue {
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(91,141,238,0.05) 100%);
+    border-color: rgba(91,141,238,0.22);
+  }
+  .insight-card.blue h3 em { color: var(--blue); }
+
+  .insight-card.red {
+    background: linear-gradient(135deg, var(--surface) 0%, rgba(139,53,53,0.08) 100%);
+    border-color: rgba(139,53,53,0.25);
+  }
+  .insight-card.red h3 em { color: #c05050; }
+
+  /* ─── DB STATS BAR ─── */
+  .db-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 2rem; }
+
+  .db-stat { background: var(--surface); padding: 1.5rem 1.75rem; }
+  .db-stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.5rem;
+    font-weight: 300;
+    color: var(--gold);
+    line-height: 1;
+  }
+  .db-stat-num span { font-size: 1.2rem; color: var(--dim); }
+  .db-stat-label { font-size: 11px; color: var(--muted); margin-top: 0.4rem; letter-spacing: 0.05em; }
+  .db-stat-sub { font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--dim); margin-top: 0.25rem; }
+
+  /* ─── VERDICT BANNER ─── */
+  .verdict-banner {
+    background: linear-gradient(135deg, rgba(45,122,85,0.12) 0%, rgba(45,122,85,0.06) 100%);
+    border: 1px solid rgba(45,122,85,0.3);
+    border-radius: 12px;
+    padding: 2rem 2.5rem;
+    margin-bottom: 2rem;
+    display: flex;
+    gap: 2rem;
+    align-items: center;
+  }
+
+  .verdict-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #4ab87a;
+    margin-bottom: 0.5rem;
+  }
+
+  .verdict-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem;
+    font-weight: 400;
+    color: #4ab87a;
+    line-height: 1.2;
+  }
+
+  .verdict-body {
+    flex: 1;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+
+  .verdict-body strong { color: var(--text); }
+
+  /* ─── FEE CARDS ─── */
+  .fee-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+
+  .fee-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .fee-card.recommended { border-color: rgba(201,160,74,0.35); }
+
+  .fee-card-header {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .fee-card.recommended .fee-card-header {
+    background: var(--gold-dim);
+  }
+
+  .fee-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .fee-range {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.4rem;
+    font-weight: 300;
+    color: var(--gold);
+  }
+
+  .fee-body { padding: 1.5rem 2rem; }
+
+  .fee-body ul { list-style: none; }
+  .fee-body li {
+    font-size: 12.5px;
+    color: var(--muted);
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: flex;
+    gap: 0.5rem;
+    line-height: 1.55;
+  }
+
+  .fee-body li:last-child { border-bottom: none; }
+  .fee-body li::before { content: '→'; color: var(--gold); font-size: 10px; flex-shrink: 0; margin-top: 3px; }
+  .fee-body li strong { color: var(--text); }
+
+  /* ─── SCROLL ANIMATION ─── */
+  .fade-in { opacity: 0; transform: translateY(16px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    padding: 3rem 5rem;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-left { font-family: 'Cormorant Garamond', serif; font-size: 1rem; color: var(--muted); font-style: italic; }
+  .footer-right { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--dim); }
+
+  /* ─── DIVIDER LABEL ─── */
+  .divider-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 2rem 0 1rem;
+  }
+
+  .divider-label.gold { color: var(--gold); }
+  .divider-label.blue { color: var(--blue); }
+  .divider-label.red { color: #c06060; }
+
+  .divider-label span { flex: 1; height: 1px; background: var(--border); display: block; }
+
+  @media (max-width: 900px) {
+    .sidebar { display: none; }
+    .main { margin-left: 0; }
+    .hero, .section { padding: 3rem 2rem; }
+    .stack-grid, .module-cards, .hours-grid, .fee-grid, .db-stats { grid-template-columns: 1fr; }
+    .callout-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── SIDEBAR ─── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <span class="eyebrow">Codebase Audit</span>
+    <div class="title">Victor: GitHub Repo Deep Dive</div>
+  </div>
+  <ul class="sidebar-nav">
+    <li><a href="#overview" class="active"><span class="nav-num">01</span> Stack Confirmation</a></li>
+    <li><a href="#modules"><span class="nav-num">02</span> Module Assessment</a></li>
+    <li><a href="#monetization"><span class="nav-num">03</span> Monetization State</a></li>
+    <li><a href="#database"><span class="nav-num">04</span> Database Depth</a></li>
+    <li><a href="#beta"><span class="nav-num">05</span> Beta Readiness</a></li>
+    <li><a href="#scaling"><span class="nav-num">06</span> SaaS Scaling</a></li>
+    <li><a href="#engagement"><span class="nav-num">07</span> Engagement Scope</a></li>
+  </ul>
+  <div class="sidebar-meta">
+    VICTOR PLATFORM<br>
+    VICTORMARKUS.COM<br><br>
+    CODEBASE AUDIT<br>
+    MAY 2026<br><br>
+    <a href="https://github.com/canalside12/hearth-and-home-hub-29" target="_blank">github/canalside12</a>
+  </div>
+</nav>
+
+<!-- ─── MAIN ─── -->
+<main class="main">
+
+  <!-- HERO -->
+  <header class="hero" id="top">
+    <div class="hero-meta">
+      <span class="badge badge-gold">Confidential</span>
+      <span class="badge badge-red">Live Stripe Keys</span>
+      <span class="badge badge-blue">Free Beta Active</span>
+      <span class="hero-date">MAY 2026</span>
+    </div>
+    <h1>Victor Codebase<br><em>Deep Audit</em></h1>
+    <p class="hero-sub">Direct analysis of the GitHub repository at hearth-and-home-hub-29. What was actually built, what is live, what is dormant, and what is missing entirely. This replaces assumptions with evidence.</p>
+    <a href="https://github.com/canalside12/hearth-and-home-hub-29" target="_blank" class="hero-repo">
+      <span class="hero-repo-icon">&#9651;</span>
+      github.com/canalside12/hearth-and-home-hub-29
+    </a>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="num gold">340</div>
+        <div class="label">TSX Components &amp; Pages</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num blue">117</div>
+        <div class="label">Edge Functions</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num gold">379</div>
+        <div class="label">Database Migrations</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num blue">5</div>
+        <div class="label">Major Modules</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num red">$0</div>
+        <div class="label">Current MRR (Free Beta)</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 01 STACK CONFIRMATION -->
+  <section class="section" id="overview">
+    <div class="section-header fade-in">
+      <div class="section-num">01</div>
+      <div class="section-title-wrap">
+        <span class="section-eyebrow">Stack Confirmation</span>
+        <h2 class="section-title">What Was Actually Built</h2>
+        <p class="section-desc">The previous platform audit made assumptions from the outside. This confirms the full technology stack from direct repository access, including every integration present and its live status.</p>
+      </div>
+    </div>
+
+    <div class="highlight-box red fade-in">
+      <strong>Critical Security Finding:</strong> The <code>.env</code> file contains a live Stripe publishable key (<code>pk_live_51SZiudG4...</code>) committed directly to the git repository. This is a security exposure risk. The Stripe secret key is correctly stored in Supabase edge function secrets, but the publishable key in version control still represents a risk surface that should be rotated and moved to environment configuration before any wider access to this repo is granted.
+    </div>
+
+    <div class="stack-grid fade-in">
+      <div class="stack-item">
+        <div class="si-layer">Frontend Framework</div>
+        <div class="si-tech">React 18 + TypeScript</div>
+        <div class="si-note">Vite build. Production-grade, fully readable and modifiable.</div>
+      </div>
+      <div class="stack-item">
+        <div class="si-layer">UI Components</div>
+        <div class="si-tech">shadcn/ui + Tailwind CSS</div>
+        <div class="si-note">Modern component library. 340 TSX files, clean extension surface.</div>
+      </div>
+      <div class="stack-item">
+        <div class="si-layer">Backend / Database</div>
+        <div class="si-tech">Supabase (PostgreSQL)</div>
+        <div class="si-note">Auth + Edge Functions + Storage. 117 edge functions deployed. RLS on all tables.</div>
+      </div>
+      <div class="stack-item">
+        <div class="si-layer">Payments</div>
+        <div class="si-tech">Stripe <span class="live">LIVE</span></div>
+        <div class="si-note">@stripe/react-stripe-js. Live publishable key active. Rent payments processing in production now.</div>
+      </div>
+      <div class="stack-item">
+        <div class="si-layer">Bank Linking</div>
+        <div class="si-tech">Plaid (react-plaid-link)</div>
+        <div class="si-note">All 6 edge functions coded and deployed. Inactive: needs PLAID_CLIENT_ID + PLAID_SECRET in Supabase secrets only.</div>
+      </div>
+      <div class="stack-item">
+        <div class="si-layer">AI Assistant</div>
+        <div class="si-tech">Markus AI (7 edge fns)</div>
+        <div class="si-note">markus-chat, markus-analytics, markus-financials, markus-tenant-insights. Module-specific context passed. Depth TBD with live data.</div>
+      </div>
+      <div class="stack-item">
+        <div class="si-layer">Data Fetching</div>
+        <div class="si-tech">TanStack Query + React Router v6</div>
+        <div class="si-note">React Query caching for client-side performance. React Router for navigation guards.</div>
+      </div>
+      <div class="stack-item">
+        <div class="si-layer">Scheduling / UI</div>
+        <div class="si-tech">react-big-calendar + DnD Kit</div>
+        <div class="si-note">Calendar view in Project Workspace. Drag-and-drop interactions present.</div>
+      </div>
+      <div class="stack-item">
+        <div class="si-layer">Charts / Export</div>
+        <div class="si-tech">Recharts + jsPDF + xlsx</div>
+        <div class="si-note">Financial dashboards, PDF report generation, spreadsheet export all wired.</div>
+      </div>
+    </div>
+
+    <div class="callout-grid fade-in">
+      <div class="callout-item">
+        <div class="ci-label">Stripe Status</div>
+        <div class="ci-value gold">LIVE — Processing</div>
+      </div>
+      <div class="callout-item">
+        <div class="ci-label">Plaid Status</div>
+        <div class="ci-value blue">Coded, Not Active</div>
+      </div>
+      <div class="callout-item">
+        <div class="ci-label">Platform Posture</div>
+        <div class="ci-value amber">free_beta</div>
+      </div>
+      <div class="callout-item">
+        <div class="ci-label">Subscription Billing</div>
+        <div class="ci-value amber">Kill-Switch Off</div>
+      </div>
+      <div class="callout-item">
+        <div class="ci-label">Live Key in Git</div>
+        <div class="ci-value red">Security Risk</div>
+      </div>
+      <div class="callout-item">
+        <div class="ci-label">RBAC Roles</div>
+        <div class="ci-value gold">6 Roles Active</div>
+      </div>
+    </div>
+
+    <div class="highlight-box gold fade-in">
+      <strong>What this confirms:</strong> The platform_audit.html estimated this was a Stage 2 shell. The codebase says otherwise. With 340 components, 117 edge functions, 379 migrations, live Stripe processing, and all Plaid code present, this is substantially closer to a production platform than the external audit suggested. The delta between the two assessments is the entire basis for revising the engagement scope in Section 07.
+    </div>
+  </section>
+
+  <!-- 02 MODULE ASSESSMENT -->
+  <section class="section" id="modules">
+    <div class="section-header fade-in">
+      <div class="section-num">02</div>
+      <div class="section-title-wrap">
+        <span class="section-eyebrow">Module Assessment</span>
+        <h2 class="section-title">Functional, Coded, and Missing</h2>
+        <p class="section-desc">Three categories based on what the repository contains. Functional means built and AI QA'd by Lovable. Coded but not active means present in code with a clear activation path. Missing means not built yet.</p>
+      </div>
+    </div>
+
+    <!-- FUNCTIONAL -->
+    <div class="module-group fade-in">
+      <div class="module-group-header">
+        <div class="module-group-label functional">Functional — Built &amp; QA'd by Lovable AI</div>
+        <div class="module-group-rule"></div>
+      </div>
+
+      <div class="module-cards">
+
+        <div class="module-card functional">
+          <div class="mc-header">
+            <div class="mc-name">Authentication &amp; Onboarding</div>
+            <span class="status-pill pill-gold">Functional</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li>Login, Signup, Forgot/Reset/Change Password</li>
+              <li>Full onboarding flow</li>
+              <li>Email verification</li>
+              <li>ProtectedRoute + route guards</li>
+              <li class="highlight">6 roles: Homeowner, Contractor, Investor, PM, Tenant, Admin</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="module-card functional">
+          <div class="mc-header">
+            <div class="mc-name">Property Hub</div>
+            <span class="status-pill pill-gold">Functional</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li>Property list, detail, analytics, settings</li>
+              <li>Multi-unit support with bulk import</li>
+              <li>Tenant management (list + detail)</li>
+              <li>Property listings / marketing pages</li>
+              <li>Team management per property</li>
+              <li class="highlight">Repair tracking present</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="module-card functional">
+          <div class="mc-header">
+            <div class="mc-name">Maintenance Module</div>
+            <span class="status-pill pill-gold">Most Complete</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li class="highlight">Full 6-stage workflow: New → Triage → Assigned → Scheduled → In Progress → Completed → Closed</li>
+              <li>Preventive schedules (RRule-based, recalculates next_due on completion)</li>
+              <li>SLA tracking and badges</li>
+              <li>Vendor/contractor assignment</li>
+              <li>Appliance tracking with service history</li>
+              <li>Maintenance analytics dashboard</li>
+              <li>Cost tracking posts directly to Financials</li>
+              <li>Notification edge functions for every status transition</li>
+              <li>Idempotency guards (no duplicate requests)</li>
+              <li class="highlight">Performance: &lt;200ms dashboard, &lt;50ms queries</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="module-card functional">
+          <div class="mc-header">
+            <div class="mc-name">Financial Command Center</div>
+            <span class="status-pill pill-gold">Functional</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li>Transaction register (ledger view)</li>
+              <li>Bank feed reconciliation page</li>
+              <li>CSV import with undo capability</li>
+              <li>Chart of Accounts (CoA mode + Simple mode)</li>
+              <li>P&amp;L, Cash Flow, Schedule E, Tax-Ready, Capital Account, Property Columns reports</li>
+              <li>Receipt upload with OCR edge function</li>
+              <li>Rules manager for auto-categorization</li>
+              <li>Transaction splitting</li>
+              <li class="highlight">QuickBooks-adjacent: export-ready, no direct QB sync yet</li>
+            </ul>
+            <div class="mc-note info"><strong>Plaid integration:</strong> edge functions deployed, code complete. Activation = add PLAID_CLIENT_ID + PLAID_SECRET to Supabase secrets. Estimated 2–4 hours.</div>
+          </div>
+        </div>
+
+        <div class="module-card functional">
+          <div class="mc-header">
+            <div class="mc-name">Project Workspace</div>
+            <span class="status-pill pill-gold">Functional</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li>Full CRUD: projects, milestones, contractors</li>
+              <li>Calendar view (react-big-calendar)</li>
+              <li>Contractor invitation system (email-based)</li>
+              <li>Quote submission via public URL for contractors</li>
+              <li>Contract and document tabs</li>
+              <li>Completed/archived view</li>
+              <li class="highlight">Markus AI with project context</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="module-card functional">
+          <div class="mc-header">
+            <div class="mc-name">Tenant Portal</div>
+            <span class="status-pill pill-gold">Complete Separate Portal</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li class="highlight">Payments via ACH + card through Stripe (LIVE)</li>
+              <li>Autopay settings</li>
+              <li>Maintenance request creation + tracking</li>
+              <li>Documents</li>
+              <li>Inspections + Appointments</li>
+              <li>Profile management</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="module-card functional">
+          <div class="mc-header">
+            <div class="mc-name">Marketing &amp; Public Pages</div>
+            <span class="status-pill pill-gold">Functional</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li>Landing page, About, Contact, Pricing</li>
+              <li>Feature detail pages for each module</li>
+              <li>Public property evaluator</li>
+              <li>Public quote request form</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="module-card functional">
+          <div class="mc-header">
+            <div class="mc-name">Markus AI (Partial)</div>
+            <span class="status-pill pill-amber">Partial</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li>Chat widget on all modules</li>
+              <li>Module-specific context passed: project ID, financial data, maintenance data</li>
+              <li>markus-chat, markus-analytics, markus-financials, markus-tenant-insights</li>
+              <li>markus-parse-tenant-document, markus-settings, markus-suggest-coa-mappings</li>
+            </ul>
+            <div class="mc-note warn"><strong>Caveat:</strong> Real data connectivity depth is TBD until tested with live user data. Chat widget is present; whether it reads real Supabase rows meaningfully requires live testing.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- CODED BUT NOT ACTIVE -->
+    <div class="module-group fade-in">
+      <div class="module-group-header">
+        <div class="module-group-label coded">Coded but Not Active — One Switch to Flip</div>
+        <div class="module-group-rule"></div>
+      </div>
+
+      <div class="module-cards">
+
+        <div class="module-card coded">
+          <div class="mc-header">
+            <div class="mc-name">Plaid Bank Linking</div>
+            <span class="status-pill pill-blue">Ready to Activate</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li class="highlight">All 6 edge functions deployed: plaid-create-link-token, plaid-exchange-public-token, plaid-sync-transactions, plaid-webhooks, plaid-list-accounts, plaid-disconnect</li>
+              <li>react-plaid-link UI component coded</li>
+              <li>Full code path present and complete</li>
+            </ul>
+            <div class="mc-note info"><strong>Activation path:</strong> Add PLAID_CLIENT_ID and PLAID_SECRET to Supabase project secrets. Estimated effort: <strong>2–4 hours</strong>.</div>
+          </div>
+        </div>
+
+        <div class="module-card coded">
+          <div class="mc-header">
+            <div class="mc-name">Stripe Subscription Billing</div>
+            <span class="status-pill pill-blue">Kill-Switch Active</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li>create-subscription-checkout edge function present</li>
+              <li>check-subscription + create-stripe-portal-session present</li>
+              <li>Hardcoded price ID: price_1SMVSzDe82GWO0CJNDa8B0eh</li>
+              <li class="highlight">Single flat plan: Victor Pro at $19.99/mo (NOT our tiered model)</li>
+              <li>PLATFORM_POSTURE = "free_beta" kills all enforcement</li>
+            </ul>
+            <div class="mc-note warn"><strong>Activation complexity:</strong> Changing posture is 1 line. But implementing our tiered pricing model (Starter/Pro/Scale/Enterprise) requires creating Stripe prices, updating price IDs, and adding enforcement logic in RouteGuard. Estimated: <strong>20–40 hours</strong>.</div>
+          </div>
+        </div>
+
+        <div class="module-card coded">
+          <div class="mc-header">
+            <div class="mc-name">Property Evaluator</div>
+            <span class="status-pill pill-blue">Likely Functional</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li>Investment Property Evaluator page</li>
+              <li>Flip Property Evaluator page</li>
+              <li>Saved evaluations page</li>
+              <li class="highlight">"Add to Property Hub" functionality present</li>
+            </ul>
+            <div class="mc-note info"><strong>Gap:</strong> Not connected to live market data. Financial modeling assumptions need validation before showing to investors.</div>
+          </div>
+        </div>
+
+        <div class="module-card coded">
+          <div class="mc-header">
+            <div class="mc-name">Stripe Connect (Contractor Payouts)</div>
+            <span class="status-pill pill-blue">Unknown Status</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li>connect-onboard-contractor edge function</li>
+              <li>connect-account-status + connect-create-login-link</li>
+              <li class="highlight">contractor-payout: enables direct contractor payouts</li>
+            </ul>
+            <div class="mc-note info"><strong>Significance:</strong> If functional, this is a meaningful differentiator for the project management module. Activation status requires live testing to confirm.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- MISSING -->
+    <div class="module-group fade-in">
+      <div class="module-group-header">
+        <div class="module-group-label missing">Missing — Not Built Yet</div>
+        <div class="module-group-rule"></div>
+      </div>
+
+      <div class="module-cards">
+
+        <div class="module-card missing">
+          <div class="mc-header">
+            <div class="mc-name">Investor Portal</div>
+            <span class="status-pill pill-red">Not Built</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li>"Investor" role exists in RLS policies</li>
+              <li>No dedicated investor portal pages found</li>
+              <li>No investor reporting, no distribution tracking</li>
+              <li>No capital account visibility for investors to view their own data</li>
+              <li class="highlight">The Financial Command Center has a Capital Account Report, but it is for the owner, not for investors to access directly</li>
+            </ul>
+            <div class="mc-note danger"><strong>Biggest strategic gap:</strong> This is the feature most differentiating Victor from AppFolio in the mid-market ICP. The roadmap targets it as Horizon 1. It does not exist yet.</div>
+          </div>
+        </div>
+
+        <div class="module-card missing">
+          <div class="mc-header">
+            <div class="mc-name">Tiered Subscription Pricing</div>
+            <span class="status-pill pill-red">Not Built</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li>No Starter/Professional/Scale/Enterprise tiers exist in code</li>
+              <li>Current code has a single flat $19.99/month plan (not live)</li>
+              <li class="highlight">The pricing model in pricing_and_valuation.md has not been implemented anywhere in the codebase</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="module-card missing">
+          <div class="mc-header">
+            <div class="mc-name">QuickBooks Integration</div>
+            <span class="status-pill pill-red">Not Built</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li>No QB integration of any kind present</li>
+              <li>Financials module has CSV/PDF export but no direct QB sync</li>
+              <li class="highlight">Identified in competitor analysis as a major differentiator: AppFolio does not offer this by design</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="module-card missing">
+          <div class="mc-header">
+            <div class="mc-name">Multi-Tenancy Isolation Audit</div>
+            <span class="status-pill pill-amber">Needs Audit</span>
+          </div>
+          <div class="mc-body">
+            <ul class="mc-features">
+              <li>All RLS is user_id based (standard but not formally audited)</li>
+              <li>shared_access table referenced (scope unclear)</li>
+              <li>No organization/workspace concept visible</li>
+              <li class="highlight">Each user appears to be their own tenant, which is fine for solo operators but does not support PM companies managing multiple clients</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 MONETIZATION STATE -->
+  <section class="section" id="monetization">
+    <div class="section-header fade-in">
+      <div class="section-num">03</div>
+      <div class="section-title-wrap">
+        <span class="section-eyebrow">Monetization State</span>
+        <h2 class="section-title">What Is and Isn't Making Money</h2>
+        <p class="section-desc">Stripe is live and processing real transactions. Victor earns $0 from them. There is a clear, documented path to first revenue: it is a kill-switch flip plus a pricing model implementation.</p>
+      </div>
+    </div>
+
+    <div class="highlight-box red fade-in">
+      <strong>Critical finding:</strong> Stripe is in LIVE mode. Rent payments are processing in production right now. Victor earns $0 on these transactions (at-cost passthrough). The first revenue flip requires changing PLATFORM_POSTURE from "free_beta" and implementing the tiered pricing model.
+    </div>
+
+    <div class="table-wrap fade-in">
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Status</th>
+            <th>Revenue Today</th>
+            <th>Path to Revenue</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-good">
+            <td class="cell-name">Rent Payment Processing</td>
+            <td><span class="status-pill pill-green">LIVE — Active</span></td>
+            <td class="cell-muted">$0 (at-cost passthrough)</td>
+            <td class="cell-muted">Add transaction fee on top of Stripe fees — minimal code change</td>
+          </tr>
+          <tr class="row-warn">
+            <td class="cell-name">Stripe Subscription Billing</td>
+            <td><span class="status-pill pill-amber">Coded — Kill-Switch</span></td>
+            <td class="cell-muted">$0 (free_beta posture)</td>
+            <td class="cell-muted">Change PLATFORM_POSTURE + implement tiered pricing: 20–40 hours</td>
+          </tr>
+          <tr class="row-warn">
+            <td class="cell-name">Plaid Bank Feed</td>
+            <td><span class="status-pill pill-blue">Coded — Inactive</span></td>
+            <td class="cell-muted">$0 (no credentials)</td>
+            <td class="cell-muted">Add PLAID_CLIENT_ID + PLAID_SECRET: 2–4 hours</td>
+          </tr>
+          <tr class="row-critical">
+            <td class="cell-name">Tiered Subscription Model</td>
+            <td><span class="status-pill pill-red">Not Built</span></td>
+            <td class="cell-muted">$0</td>
+            <td class="cell-muted">Create Stripe prices for 4 tiers, update RouteGuard enforcement logic</td>
+          </tr>
+          <tr class="row-critical">
+            <td class="cell-name">Investor Portal Premium Features</td>
+            <td><span class="status-pill pill-red">Portal Not Built</span></td>
+            <td class="cell-muted">$0</td>
+            <td class="cell-muted">Build investor portal first, then gate behind Professional+ tier</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout-grid fade-in">
+      <div class="callout-item">
+        <div class="ci-label">Current Platform Posture</div>
+        <div class="ci-value amber">free_beta</div>
+      </div>
+      <div class="callout-item">
+        <div class="ci-label">Hardcoded Pro Price</div>
+        <div class="ci-value blue">$19.99/month flat</div>
+      </div>
+      <div class="callout-item">
+        <div class="ci-label">Our Tiered Model</div>
+        <div class="ci-value red">Not Implemented</div>
+      </div>
+    </div>
+
+    <div class="highlight-box gold fade-in">
+      <strong>Revised billing estimate:</strong> The $19.99 flat plan hardcoded in the repo is not our model. Implementing the Starter ($49) / Professional ($99) / Scale ($199) / Enterprise ($399) tiered architecture with unit-based overages requires creating 4 Stripe price objects, updating price IDs throughout the codebase, and adding enforcement gates in RouteGuard. This is 20–40 hours of focused work, but it is the highest-leverage 20–40 hours in the entire engagement.
+    </div>
+  </section>
+
+  <!-- 04 DATABASE DEPTH -->
+  <section class="section" id="database">
+    <div class="section-header fade-in">
+      <div class="section-num">04</div>
+      <div class="section-title-wrap">
+        <span class="section-eyebrow">Database Depth</span>
+        <h2 class="section-title">What Was Built, Since When</h2>
+        <p class="section-desc">379 migrations spanning from October 2025 to present. The migration count alone signals sustained, committed development over seven-plus months — not a weekend prototype.</p>
+      </div>
+    </div>
+
+    <div class="db-stats fade-in">
+      <div class="db-stat">
+        <div class="db-stat-num">379</div>
+        <div class="db-stat-label">Total Migrations</div>
+        <div class="db-stat-sub">Starting Oct 2025</div>
+      </div>
+      <div class="db-stat">
+        <div class="db-stat-num">7<span>+ mo</span></div>
+        <div class="db-stat-label">Active Development</div>
+        <div class="db-stat-sub">2025-10-25 to present</div>
+      </div>
+      <div class="db-stat">
+        <div class="db-stat-num">15<span>+</span></div>
+        <div class="db-stat-label">Confirmed Key Tables</div>
+        <div class="db-stat-sub">RLS on all tables</div>
+      </div>
+      <div class="db-stat">
+        <div class="db-stat-num">117</div>
+        <div class="db-stat-label">Edge Functions</div>
+        <div class="db-stat-sub">Serverless, auto-scaling</div>
+      </div>
+    </div>
+
+    <div class="divider-label gold fade-in">
+      Confirmed Key Tables
+      <span></span>
+    </div>
+
+    <div class="table-wrap fade-in">
+      <table>
+        <thead>
+          <tr>
+            <th>Table</th>
+            <th>Module</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="row-good">
+            <td class="cell-mono">victor_properties</td>
+            <td><span class="status-pill pill-gold">Property Hub</span></td>
+            <td class="cell-muted">Core entity; multi-unit support confirmed</td>
+          </tr>
+          <tr class="row-good">
+            <td class="cell-mono">maintenance_requests</td>
+            <td><span class="status-pill pill-gold">Maintenance</span></td>
+            <td class="cell-muted">6-stage workflow state machine; idempotency guards</td>
+          </tr>
+          <tr class="row-good">
+            <td class="cell-mono">maintenance_schedules</td>
+            <td><span class="status-pill pill-gold">Maintenance</span></td>
+            <td class="cell-muted">RRule-based; next_due recalculated on completion</td>
+          </tr>
+          <tr>
+            <td class="cell-mono">maintenance_costs</td>
+            <td><span class="status-pill pill-gold">Maintenance</span></td>
+            <td class="cell-muted">Posts to financial_transactions on close</td>
+          </tr>
+          <tr>
+            <td class="cell-mono">maintenance_work_orders</td>
+            <td><span class="status-pill pill-gold">Maintenance</span></td>
+            <td class="cell-muted">Vendor/contractor assignment records</td>
+          </tr>
+          <tr class="row-good">
+            <td class="cell-mono">financial_transactions</td>
+            <td><span class="status-pill pill-gold">Financials</span></td>
+            <td class="cell-muted">Ledger table; receives from maintenance, Stripe, Plaid</td>
+          </tr>
+          <tr class="row-good">
+            <td class="cell-mono">projects</td>
+            <td><span class="status-pill pill-gold">Project Workspace</span></td>
+            <td class="cell-muted">Full CRUD; milestones + contractors linked</td>
+          </tr>
+          <tr>
+            <td class="cell-mono">project_members</td>
+            <td><span class="status-pill pill-gold">Project Workspace</span></td>
+            <td class="cell-muted">Contractor and team member associations</td>
+          </tr>
+          <tr>
+            <td class="cell-mono">contractors</td>
+            <td><span class="status-pill pill-gold">Project / Maintenance</span></td>
+            <td class="cell-muted">Shared across Project Workspace and Maintenance modules</td>
+          </tr>
+          <tr>
+            <td class="cell-mono">contractor_projects</td>
+            <td><span class="status-pill pill-gold">Project Workspace</span></td>
+            <td class="cell-muted">Many-to-many; quote/invite flow routed here</td>
+          </tr>
+          <tr class="row-good">
+            <td class="cell-mono">tenants</td>
+            <td><span class="status-pill pill-gold">Property Hub / Portal</span></td>
+            <td class="cell-muted">Linked to properties; Stripe ACH/card payment records</td>
+          </tr>
+          <tr>
+            <td class="cell-mono">markus_chats</td>
+            <td><span class="status-pill pill-blue">Markus AI</span></td>
+            <td class="cell-muted">Conversation history persisted per user per module</td>
+          </tr>
+          <tr>
+            <td class="cell-mono">appliances</td>
+            <td><span class="status-pill pill-gold">Maintenance</span></td>
+            <td class="cell-muted">Appliance inventory with service history</td>
+          </tr>
+          <tr>
+            <td class="cell-mono">appliance_events</td>
+            <td><span class="status-pill pill-gold">Maintenance</span></td>
+            <td class="cell-muted">Service events linked to appliance records</td>
+          </tr>
+          <tr class="row-warn">
+            <td class="cell-mono">shared_access</td>
+            <td><span class="status-pill pill-amber">RBAC</span></td>
+            <td class="cell-muted">Scope unclear; likely enables team member and investor access grants</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="highlight-box blue fade-in">
+      <strong>Performance notes confirmed in codebase:</strong> Database indices are optimized for hot queries. Maintenance dashboard targets &lt;200ms. Key query paths target &lt;50ms. This is not default Lovable scaffolding — these are deliberate performance decisions that indicate real engineering effort on the database layer.
+    </div>
+  </section>
+
+  <!-- 05 BETA READINESS -->
+  <section class="section" id="beta">
+    <div class="section-header fade-in">
+      <div class="section-num">05</div>
+      <div class="section-title-wrap">
+        <span class="section-eyebrow">Beta Readiness</span>
+        <h2 class="section-title">Weeks, Not Months</h2>
+        <p class="section-desc">The original platform audit suggested months to paid beta. The codebase audit changes that assessment significantly. The work to paid beta is well-defined, sequenced, and measurably smaller than assumed.</p>
+      </div>
+    </div>
+
+    <div class="verdict-banner fade-in">
+      <div>
+        <div class="verdict-label">Audit Verdict</div>
+        <div class="verdict-text">Beta-ready in weeks, not months</div>
+      </div>
+      <div class="verdict-body">
+        The previous ~480-hour estimate was based on assuming a shell. The actual remaining work to reach paid beta is <strong>120–140 hours</strong>. This is a fundamental revision, not a rounding adjustment. The platform is substantially more complete than external observation suggested.
+      </div>
+    </div>
+
+    <div class="divider-label gold fade-in">
+      Beta Launch Checklist
+      <span></span>
+    </div>
+
+    <ul class="gap-list fade-in">
+      <li class="gap-item good">
+        <div class="gap-num">1</div>
+        <div class="gap-body">
+          <div class="gap-title">
+            <span class="gap-hours">2–4 hrs</span>
+            Add Plaid credentials to Supabase secrets
+          </div>
+          <div class="gap-desc">PLAID_CLIENT_ID and PLAID_SECRET added to Supabase project secrets. All edge functions are already deployed and waiting. This flips bank linking from coded to active without touching a single line of application code.</div>
+        </div>
+      </li>
+      <li class="gap-item important">
+        <div class="gap-num">2</div>
+        <div class="gap-body">
+          <div class="gap-title">
+            <span class="gap-hours">20–40 hrs</span>
+            Implement tiered pricing in Stripe and update codebase
+          </div>
+          <div class="gap-desc">Create 4 Stripe price objects for the Starter/Professional/Scale/Enterprise tiers. Update price IDs in the codebase. Add unit-based overage logic. Change PLATFORM_POSTURE. Update enforcement in RouteGuard. This is the highest-leverage block of work in the engagement.</div>
+        </div>
+      </li>
+      <li class="gap-item critical">
+        <div class="gap-num">3</div>
+        <div class="gap-body">
+          <div class="gap-title">
+            <span class="gap-hours">30–50 hrs</span>
+            Build minimum viable Investor Portal
+          </div>
+          <div class="gap-desc">The biggest strategic gap. Minimum viable: read-only dashboard showing the investor's allocated properties, P&amp;L summary, and distribution history. The Financial Command Center data is already there — it needs an investor-facing view with proper RLS scoping.</div>
+        </div>
+      </li>
+      <li class="gap-item critical">
+        <div class="gap-num">4</div>
+        <div class="gap-body">
+          <div class="gap-title">
+            <span class="gap-hours">4–8 hrs</span>
+            Security audit: rotate live Stripe key, confirm no other secrets in git
+          </div>
+          <div class="gap-desc">The <strong>pk_live_51SZiudG4...</strong> Stripe publishable key committed to <code>.env</code> in version control must be rotated and moved to environment configuration. A full scan of the git history for any other exposed credentials should be conducted before any external access is granted to this repository.</div>
+        </div>
+      </li>
+      <li class="gap-item important">
+        <div class="gap-num">5</div>
+        <div class="gap-body">
+          <div class="gap-title">
+            Real user testing with Joe and Mitch
+          </div>
+          <div class="gap-desc">AI QA (Lovable's process) confirms structural correctness. It does not confirm workflow usability with real data. Joe and Mitch running actual scenarios — property creation, tenant onboarding, first rent payment, reconciliation — is the only honest QA that matters before beta users are onboarded.</div>
+        </div>
+      </li>
+      <li class="gap-item important">
+        <div class="gap-num">6</div>
+        <div class="gap-body">
+          <div class="gap-title">
+            <span class="gap-hours">8–16 hrs</span>
+            Onboarding flow review: signup to first value
+          </div>
+          <div class="gap-desc">The existing onboarding flow needs a clean run-through: does signup → first property → first unit → first tenant → first tracked transaction work as a coherent path for a new user? This is the conversion funnel. Any friction here kills retention before it starts.</div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="hours-summary fade-in" style="margin-top:1.5rem;">
+      <div class="hs-item">
+        <div class="hs-num">2–4</div>
+        <div class="hs-label">Plaid Activation (hrs)</div>
+      </div>
+      <div class="hs-divider"></div>
+      <div class="hs-item">
+        <div class="hs-num">20–40</div>
+        <div class="hs-label">Billing Implementation (hrs)</div>
+      </div>
+      <div class="hs-divider"></div>
+      <div class="hs-item">
+        <div class="hs-num">30–50</div>
+        <div class="hs-label">Investor Portal MVP (hrs)</div>
+      </div>
+      <div class="hs-divider"></div>
+      <div class="hs-item">
+        <div class="hs-num">4–8</div>
+        <div class="hs-label">Security Audit (hrs)</div>
+      </div>
+      <div class="hs-divider"></div>
+      <div class="hs-item">
+        <div class="hs-num total">120–140</div>
+        <div class="hs-label">Total to Paid Beta</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06 SAAS SCALING -->
+  <section class="section" id="scaling">
+    <div class="section-header fade-in">
+      <div class="section-num">06</div>
+      <div class="section-title-wrap">
+        <span class="section-eyebrow">SaaS Scaling Assessment</span>
+        <h2 class="section-title">What Scales, What Needs Work</h2>
+        <p class="section-desc">An honest read of the architecture against production SaaS requirements. The foundation is strong. The gaps are known, sequenced, and solvable.</p>
+      </div>
+    </div>
+
+    <div class="divider-label gold fade-in">
+      Already Built for Scale
+      <span></span>
+    </div>
+
+    <div class="callout-grid fade-in" style="grid-template-columns: 1fr 1fr 1fr;">
+      <div class="callout-item">
+        <div class="ci-label">Compute</div>
+        <div class="ci-value blue">117 Edge Functions</div>
+      </div>
+      <div class="callout-item">
+        <div class="ci-label">Database</div>
+        <div class="ci-value gold">Managed PostgreSQL</div>
+      </div>
+      <div class="callout-item">
+        <div class="ci-label">Security</div>
+        <div class="ci-value gold">RLS on All Tables</div>
+      </div>
+      <div class="callout-item">
+        <div class="ci-label">Client Performance</div>
+        <div class="ci-value blue">React Query Caching</div>
+      </div>
+      <div class="callout-item">
+        <div class="ci-label">DB Performance</div>
+        <div class="ci-value gold">Indices on Hot Queries</div>
+      </div>
+      <div class="callout-item">
+        <div class="ci-label">Access Control</div>
+        <div class="ci-value gold">6-Role RBAC Ready</div>
+      </div>
+    </div>
+
+    <div class="divider-label blue fade-in" style="margin-top:2rem;">
+      Needs to Be Built for Scale (Horizons 1–3)
+      <span></span>
+    </div>
+
+    <ul class="gap-list fade-in">
+      <li class="gap-item critical">
+        <div class="gap-num">H1</div>
+        <div class="gap-body">
+          <div class="gap-title">Investor Portal</div>
+          <div class="gap-desc">Horizon 1 gap. The role exists in RLS. The data exists in the Financial Command Center. The investor-facing view does not. This is the most strategic missing piece relative to the platform's positioning against mid-market incumbents.</div>
+        </div>
+      </li>
+      <li class="gap-item critical">
+        <div class="gap-num">H1</div>
+        <div class="gap-body">
+          <div class="gap-title">Tiered Billing Model</div>
+          <div class="gap-desc">Immediate. The kill-switch flip alone does nothing useful — the $19.99 flat plan is not the model. Implementing the tiered architecture is the prerequisite for any serious revenue conversation.</div>
+        </div>
+      </li>
+      <li class="gap-item important">
+        <div class="gap-num">H2</div>
+        <div class="gap-body">
+          <div class="gap-title">QuickBooks Integration</div>
+          <div class="gap-desc">Horizon 2. Not started. As documented in the competitor analysis, AppFolio deliberately excludes this to lock customers in. A clean QB sync layer is a major adoption bridge for the mid-market ICP who is already living in QuickBooks.</div>
+        </div>
+      </li>
+      <li class="gap-item phase2">
+        <div class="gap-num">H2</div>
+        <div class="gap-body">
+          <div class="gap-title">Multi-Org / Workspace Support</div>
+          <div class="gap-desc">For PM companies managing multiple clients under one account. The current RLS is user_id based. A workspace/org abstraction layer is needed for PM companies at scale. Not needed for Horizon 1 ICP (solo operators), becomes important in H2.</div>
+        </div>
+      </li>
+      <li class="gap-item phase2">
+        <div class="gap-num">H3</div>
+        <div class="gap-body">
+          <div class="gap-title">MLS Integration</div>
+          <div class="gap-desc">Horizon 3. Bridge Interactive / Spark API. Required for the full-stack operator vision: acquire (MLS data) + manage (Victor PM) + report (Victor IR) from one login. This is the category-defining capability, not a near-term priority.</div>
+        </div>
+      </li>
+      <li class="gap-item phase2">
+        <div class="gap-num">H3</div>
+        <div class="gap-body">
+          <div class="gap-title">State-Specific Forms / Brokerage Compliance</div>
+          <div class="gap-desc">Horizon 3. Dotloop / SkySlope integration territory. Significant regulatory complexity. Defer until the platform has proven traction in the PM and IR layers. This is the moat, not the entry point.</div>
+        </div>
+      </li>
+    </ul>
+
+    <div class="insight-card fade-in" style="margin-top:2rem;">
+      <h3>Honest assessment of <em>Lovable-built code quality</em></h3>
+      <p>The QA reports shipped with the codebase were generated by Lovable AI, not validated by real users running real workflows. The code is likely structurally correct: Supabase queries, RLS policies, and React component patterns are all within Lovable's strength envelope and AI handles these consistently well.</p>
+      <p>The risk zones are specific: <strong>complex financial calculations</strong>, <strong>edge cases in payment flows</strong>, and <strong>real-world data volume behavior</strong>. A human code review of the financial module and payment flows specifically is recommended before beta users with real money are onboarded. Lovable-generated code for these modules should be treated as structurally sound but behaviorally unverified until a human has run the actual transactions.</p>
+    </div>
+  </section>
+
+  <!-- 07 ENGAGEMENT SCOPE -->
+  <section class="section" id="engagement">
+    <div class="section-header fade-in">
+      <div class="section-num">07</div>
+      <div class="section-title-wrap">
+        <span class="section-eyebrow">Revised Engagement Scope</span>
+        <h2 class="section-title">Two Layers, Two Conversations</h2>
+        <p class="section-desc">The engagement has two distinct phases that should not be conflated. Layer 1 is the MVP/beta launch sprint. Layer 2 is the full platform buildout from the competitor analysis and platform audit roadmap. Different scope, different timeline, different commercial structure.</p>
+      </div>
+    </div>
+
+    <!-- Layer 1 / Layer 2 split -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:2rem;" class="fade-in">
+      <div style="background:var(--surface2);padding:2rem;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:0.6rem;">Layer 1 · This Engagement</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:500;color:var(--text);margin-bottom:1rem;line-height:1.3;">MVP / Beta Launch Sprint</div>
+        <ul style="list-style:none;">
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--gold);flex-shrink:0;">→</span>Plaid bank linking activated</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--gold);flex-shrink:0;">→</span>Tiered subscription billing live</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--gold);flex-shrink:0;">→</span>Investor portal MVP built</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--gold);flex-shrink:0;">→</span>Security audit (live keys in repo)</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--gold);flex-shrink:0;">→</span>Onboarding flow verified end-to-end</li>
+        </ul>
+        <div style="margin-top:1.25rem;padding:0.75rem 1rem;background:rgba(201,160,74,0.08);border:1px solid rgba(201,160,74,0.2);border-radius:6px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:0.3rem;">Estimate</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--gold);">120–140 hrs</div>
+        </div>
+      </div>
+      <div style="background:var(--surface);padding:2rem;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue);margin-bottom:0.6rem;">Layer 2 · Partnership Phase</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:500;color:var(--text);margin-bottom:1rem;line-height:1.3;">Full Platform Buildout</div>
+        <ul style="list-style:none;">
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--blue);flex-shrink:0;">→</span>QuickBooks integration (~80–120 hrs)</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--blue);flex-shrink:0;">→</span>Transaction bridge layer (~80–120 hrs)</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--blue);flex-shrink:0;">→</span>Brokerage + MLS integration (~200–300 hrs)</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--blue);flex-shrink:0;">→</span>Multi-org / workspace architecture</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--blue);flex-shrink:0;">→</span>Full Horizon 2 + 3 roadmap items</li>
+        </ul>
+        <div style="margin-top:1.25rem;padding:0.75rem 1rem;background:rgba(91,141,238,0.08);border:1px solid rgba(91,141,238,0.2);border-radius:6px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--blue);margin-bottom:0.3rem;">Estimate</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--blue);">350–550+ hrs</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider-label gold fade-in">
+      Layer 1 Flat Fee · MVP / Beta Launch
+      <span></span>
+    </div>
+
+    <div class="fee-grid fade-in">
+      <div class="fee-card recommended">
+        <div class="fee-card-header">
+          <div class="fee-card-title">Strategic Lead + Technical Execution <span style="font-size:10px;color:var(--gold);font-family:'JetBrains Mono',monospace;margin-left:0.5rem;">RECOMMENDED</span></div>
+          <div class="fee-range">$15,000–$18,000</div>
+        </div>
+        <div class="fee-body">
+          <ul>
+            <li><strong>Justified by:</strong> Matt drives the pricing architecture, investor portal design, and the monetization flip — not just bug fixes. 120–140 hours at an effective strategic rate.</li>
+            <li><strong>Scope:</strong> Plaid activation, tiered billing, investor portal MVP, security audit, onboarding flow, real user testing guidance.</li>
+            <li><strong>The frame:</strong> "I am not a contractor. I am the person who translates what has been built into a business."</li>
+            <li><strong>Equity path:</strong> This framing is the same conversation that opens the partnership dialogue. Flat fee for Layer 1, equity for Layer 2 onward.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="fee-card">
+        <div class="fee-card-header">
+          <div class="fee-card-title">Coding Sprint (Lower Anchor)</div>
+          <div class="fee-range">$10,000–$12,000</div>
+        </div>
+        <div class="fee-body">
+          <ul>
+            <li><strong>Use only if:</strong> Joe and Mitch are not ready for the full partnership framing yet. This is the foot-in-the-door number.</li>
+            <li><strong>Risk:</strong> Sets a contractor precedent. Harder to walk into a 20% equity ask after completing work at this rate.</li>
+            <li><strong>Note:</strong> The work is identical. The number changes the relationship arc, not the deliverables.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider-label gold fade-in" style="margin-top:0.5rem;">
+      Partnership / Equity Framing
+      <span></span>
+    </div>
+
+    <div class="insight-card blue fade-in">
+      <h3>Equity target: <em>20%</em> — cap table becomes 40 / 40 / 20</h3>
+      <p>Joe and Mitch presumably hold the company 50/50 today. A 20% ask means they each dilute to 40%, giving Matt 20% — a clean three-way split with a clear majority still held by the founders. This is the right number.</p>
+      <p>The codebase audit strengthens this position. Joe has already built something real. Matt's ask is not to be compensated for building the entire platform from scratch. The ask is for being the person who completes it, monetizes it, and scales it — and who brings the strategic architecture (competitor analysis, roadmap, pricing model) that defines what "scaling it" even means. That is a 20% founder-level ask on a platform that has 7 months of committed development behind it and a clear path to $300M+.</p>
+      <p>Joe is a DIY builder actively working to let go of control. The equity ask is the ask that formalizes trust. It should be framed that way, not as a term sheet. Dan is the right person to carry this conversation as a trusted intermediary for both sides.</p>
+    </div>
+
+    <div class="callout-grid fade-in">
+      <div class="callout-item">
+        <div class="ci-label">Layer 1 Hours (MVP/Beta)</div>
+        <div class="ci-value gold">120–140 hrs</div>
+      </div>
+      <div class="callout-item">
+        <div class="ci-label">Layer 1 Flat Fee</div>
+        <div class="ci-value gold">$15,000–$18,000</div>
+      </div>
+      <div class="callout-item">
+        <div class="ci-label">Layer 2 Hours (Full Buildout)</div>
+        <div class="ci-value blue">350–550+ hrs</div>
+      </div>
+      <div class="callout-item">
+        <div class="ci-label">Equity Target (Layer 2)</div>
+        <div class="ci-value green">20% · 40/40/20 split</div>
+      </div>
+    </div>
+
+  </section>
+
+  <footer class="footer">
+    <div class="footer-left">Prepared by Matt Isaman · Victor Platform · May 2026</div>
+    <div class="footer-right">Codebase Audit · github.com/canalside12/hearth-and-home-hub-29</div>
+  </footer>
+
+</main>
+
+<script>
+// ─── SCROLL ANIMATION ───
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.06 });
+document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+
+// ─── ACTIVE NAV ───
+const sections = document.querySelectorAll('section[id], header[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a');
+const navObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(a => a.classList.remove('active'));
+      const active = document.querySelector(`.sidebar-nav a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px' });
+sections.forEach(s => navObs.observe(s));
+</script>
+</body>
+</html>
