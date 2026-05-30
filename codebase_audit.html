@@ -950,7 +950,7 @@
     </div>
 
     <div class="highlight-box fade-in">
-      <strong>Credentials note:</strong> Credentials are handled correctly. The Stripe secret key is stored in Supabase edge function secrets, exactly where it belongs. The publishable key in <code>.env</code> is public by design (it ships in the client-side bundle to every browser regardless), so it is a non-issue. Nothing to fix here.
+      <strong>A note on testing:</strong> Stripe is configured in live mode, so this was kept to a view-only code review. No test data was entered and no transactions were run, since anything submitted could potentially hit a real account. The live versus test posture is easy to confirm together in conversation.
     </div>
 
     <div class="stack-grid fade-in">
@@ -1386,12 +1386,12 @@
       <div class="section-title-wrap">
         <span class="section-eyebrow">Monetization State</span>
         <h2 class="section-title">What Is and Isn't Making Money</h2>
-        <p class="section-desc">Stripe is live and processing real transactions. Victor earns $0 from them. There is a clear, documented path to first revenue: it is a kill-switch flip plus a pricing model implementation.</p>
+        <p class="section-desc">Stripe is configured in live mode. There is a clear, documented path to first revenue: a kill-switch flip plus the pricing model implementation.</p>
       </div>
     </div>
 
     <div class="highlight-box red fade-in">
-      <strong>Key finding:</strong> Stripe is configured in LIVE mode. The infrastructure is in place for real payment processing. The platform is currently in free beta, with Victor earning $0 on transactions (at-cost passthrough). The first revenue flip requires implementing the tiered pricing model and changing the platform posture from beta to paid.
+      <strong>Key finding:</strong> Stripe is configured in LIVE mode. The infrastructure is in place for real payment processing. The platform is currently set to free beta, with payment processing configured as at-cost passthrough (no markup taken). The first revenue flip requires implementing the tiered pricing model and changing the platform posture from beta to paid.
     </div>
 
     <div class="table-wrap fade-in">
