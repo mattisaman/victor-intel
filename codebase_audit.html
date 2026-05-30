@@ -948,8 +948,8 @@
       </div>
     </div>
 
-    <div class="highlight-box red fade-in">
-      <strong>Security Note:</strong> The <code>.env</code> file contains a live Stripe publishable key (<code>pk_live_51SZiudG4...</code>) committed directly to the git repository. The Stripe secret key is correctly stored in Supabase edge function secrets. As a pre-launch step, the publishable key should be rotated and moved to environment configuration rather than version control.
+    <div class="highlight-box fade-in">
+      <strong>Pre-launch note:</strong> The Stripe secret key is correctly stored in Supabase edge function secrets — that is the important one, and it is handled properly. One item worth addressing before launch: moving the publishable key out of <code>.env</code> and into environment configuration is standard practice before wider distribution of the repo. Minor housekeeping, not a blocker.
     </div>
 
     <div class="stack-grid fade-in">
@@ -1018,8 +1018,8 @@
         <div class="ci-value amber">Kill-Switch Off</div>
       </div>
       <div class="callout-item">
-        <div class="ci-label">Live Key in Git</div>
-        <div class="ci-value red">Security Risk</div>
+        <div class="ci-label">Pre-launch Item</div>
+        <div class="ci-value amber">Env Config</div>
       </div>
       <div class="callout-item">
         <div class="ci-label">RBAC Roles</div>
@@ -1619,9 +1619,9 @@
         <div class="gap-body">
           <div class="gap-title">
             <span class="gap-hours">4–8 hrs</span>
-            Security audit: rotate live Stripe key, confirm no other secrets in git
+            Environment configuration cleanup
           </div>
-          <div class="gap-desc">The <strong>pk_live_51SZiudG4...</strong> Stripe publishable key committed to <code>.env</code> in version control should be rotated and moved to environment configuration. A full scan of the git history for any other exposed credentials is recommended as a standard pre-launch step.</div>
+          <div class="gap-desc">The Stripe secret key is correctly stored in Supabase — that is done right. One standard pre-launch step is moving the publishable key from <code>.env</code> into environment configuration and doing a routine check of the git history. This is normal housekeeping before any production launch.</div>
         </div>
       </li>
       <li class="gap-item important">
