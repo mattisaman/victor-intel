@@ -950,7 +950,7 @@
     </div>
 
     <div class="highlight-box fade-in">
-      <strong>Pre-launch note:</strong> The Stripe secret key is correctly stored in Supabase edge function secrets. That is the important one, and it is handled properly. One item worth addressing before launch: moving the publishable key out of <code>.env</code> and into environment configuration is standard practice before wider distribution of the repo. Minor housekeeping, not a blocker.
+      <strong>Credentials note:</strong> Credentials are handled correctly. The Stripe secret key is stored in Supabase edge function secrets, exactly where it belongs. The publishable key in <code>.env</code> is public by design (it ships in the client-side bundle to every browser regardless), so it is a non-issue. Nothing to fix here.
     </div>
 
     <div class="stack-grid fade-in">
@@ -1019,8 +1019,8 @@
         <div class="ci-value amber">Kill-Switch Off</div>
       </div>
       <div class="callout-item">
-        <div class="ci-label">Pre-launch Item</div>
-        <div class="ci-value amber">Env Config</div>
+        <div class="ci-label">Credentials</div>
+        <div class="ci-value green">Secured</div>
       </div>
       <div class="callout-item">
         <div class="ci-label">RBAC Roles</div>
@@ -1649,14 +1649,14 @@
           <div class="gap-desc">The biggest strategic gap. Minimum viable: read-only dashboard showing the investor's allocated properties, P&amp;L summary, and distribution history. The Financial Command Center data is already there. It needs an investor-facing view with proper RLS scoping.</div>
         </div>
       </li>
-      <li class="gap-item critical">
+      <li class="gap-item important">
         <div class="gap-num">4</div>
         <div class="gap-body">
           <div class="gap-title">
             <span class="gap-hours">4–8 hrs</span>
-            Environment configuration cleanup
+            Standard pre-launch security review
           </div>
-          <div class="gap-desc">The Stripe secret key is correctly stored in Supabase, which is done right. One standard pre-launch step is moving the publishable key from <code>.env</code> into environment configuration and doing a routine check of the git history. This is normal housekeeping before any production launch.</div>
+          <div class="gap-desc">Credentials are already handled correctly: the secret key lives in Supabase secrets and the publishable key is public by design. Before onboarding paying users with real money, a brief security pass is normal diligence: confirm RLS coverage across tables, review the payment-flow handling, and verify nothing sensitive is committed. Routine, not a red flag.</div>
         </div>
       </li>
       <li class="gap-item important">
@@ -1698,7 +1698,7 @@
       <div class="hs-divider"></div>
       <div class="hs-item">
         <div class="hs-num">4–8</div>
-        <div class="hs-label">Security Audit (hrs)</div>
+        <div class="hs-label">Security Review (hrs)</div>
       </div>
       <div class="hs-divider"></div>
       <div class="hs-item">
