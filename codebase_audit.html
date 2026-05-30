@@ -885,7 +885,8 @@
     <li><a href="#database"><span class="nav-num">04</span> Database Depth</a></li>
     <li><a href="#beta"><span class="nav-num">05</span> Beta Readiness</a></li>
     <li><a href="#scaling"><span class="nav-num">06</span> SaaS Scaling</a></li>
-    <li><a href="#engagement"><span class="nav-num">07</span> Engagement Scope</a></li>
+    <li><a href="#architecture"><span class="nav-num">07</span> Build Architecture</a></li>
+    <li><a href="#engagement"><span class="nav-num">08</span> Path to Launch</a></li>
   </ul>
   <div class="sidebar-meta">
     VICTOR PLATFORM<br>
@@ -1773,10 +1774,82 @@
     </div>
   </section>
 
-  <!-- 07 ENGAGEMENT SCOPE -->
-  <section class="section" id="engagement">
+  <!-- 07 BUILD ARCHITECTURE -->
+  <section class="section" id="architecture">
     <div class="section-header fade-in">
       <div class="section-num">07</div>
+      <div class="section-title-wrap">
+        <span class="section-eyebrow">Build Architecture</span>
+        <h2 class="section-title">Moving from Rapid Build to Scalable Code</h2>
+        <p class="section-desc">Lovable was the right tool for getting here. Seven months and a serious platform foundation is the proof. The next phase of work — everything built from Phase 1 onward — should be written to a production standard that scales with the business.</p>
+      </div>
+    </div>
+
+    <div class="highlight-box fade-in">
+      <strong>The distinction that matters:</strong> Lovable generates functional React and Supabase code through AI prompting — fast, visually complete, structurally sound. What it does not produce is the kind of codebase a growing team can extend confidently, where patterns are consistent, abstractions are clean, and each new feature doesn't risk breaking something else. That shift is what Phase 1 is designed to make.
+    </div>
+
+    <!-- Two-column comparison -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:2rem;" class="fade-in">
+      <div style="background:var(--surface2);padding:2rem;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--muted);margin-bottom:0.75rem;">Where the Platform Comes From</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:500;color:var(--text);margin-bottom:1rem;line-height:1.3;">Lovable-Generated Code</div>
+        <ul style="list-style:none;">
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.55;"><span style="color:var(--gold);flex-shrink:0;">+</span>Gets a working product built fast</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.55;"><span style="color:var(--gold);flex-shrink:0;">+</span>Visually complete, consistent UI shell</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.55;"><span style="color:var(--gold);flex-shrink:0;">+</span>Supabase schema and edge functions are solid</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.55;"><span style="color:#8b3535;flex-shrink:0;">–</span>Inconsistent patterns across modules</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.55;"><span style="color:#8b3535;flex-shrink:0;">–</span>Hard to extend without risking regression</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;display:flex;gap:0.5rem;line-height:1.55;"><span style="color:#8b3535;flex-shrink:0;">–</span>Financial and payment flows need human review before real money scales</li>
+        </ul>
+      </div>
+      <div style="background:var(--surface);padding:2rem;">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue);margin-bottom:0.75rem;">Where the Platform Is Going</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:500;color:var(--text);margin-bottom:1rem;line-height:1.3;">Production-Quality Scalable Code</div>
+        <ul style="list-style:none;">
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.55;"><span style="color:var(--blue);flex-shrink:0;">→</span>Consistent architecture across all modules</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.55;"><span style="color:var(--blue);flex-shrink:0;">→</span>Clean abstractions: reusable hooks, typed services, clear data layer</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.55;"><span style="color:var(--blue);flex-shrink:0;">→</span>Financial flows reviewed, hardened, and verified end-to-end</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.55;"><span style="color:var(--blue);flex-shrink:0;">→</span>New features extend the system without breaking it</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.55;"><span style="color:var(--blue);flex-shrink:0;">→</span>Codebase a future team member or investor can understand and audit</li>
+          <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;display:flex;gap:0.5rem;line-height:1.55;"><span style="color:var(--blue);flex-shrink:0;">→</span>Built to support the full 3-horizon roadmap without a rewrite</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- What stays, what gets upgraded -->
+    <div class="analysis-grid fade-in">
+      <div class="analysis-card gold-card">
+        <h4>What Stays As-Is</h4>
+        <ul>
+          <li><strong>The Supabase schema.</strong> 379 migrations represent real data modeling work. The schema is the most durable asset in the platform. It stays.</li>
+          <li><strong>Edge functions that are simple and deterministic.</strong> Plaid link, invitation flows, webhook handlers — these are clean and don't need touching.</li>
+          <li><strong>The UI shell.</strong> The component library and visual design are solid. The upgrade is in the logic layer, not the appearance.</li>
+          <li><strong>The routing and auth architecture.</strong> React Router v6 with protected routes is correctly structured.</li>
+        </ul>
+      </div>
+      <div class="analysis-card" style="border-color:rgba(91,141,238,0.2);background:linear-gradient(135deg,var(--surface) 0%,rgba(91,141,238,0.04) 100%);">
+        <h4>What Gets Built to a Scalable Standard</h4>
+        <ul>
+          <li><strong>Financial flows.</strong> Rent processing, reconciliation, ledger writes, distribution logic — every line that touches money gets written and reviewed to a production standard.</li>
+          <li><strong>Investor portal.</strong> New build from scratch. Clean data model, typed queries, proper RLS from the first line.</li>
+          <li><strong>Subscription billing.</strong> The tiered pricing architecture and enforcement layer built cleanly — not patched onto the existing beta posture.</li>
+          <li><strong>Shared component and hook layer.</strong> As new features are added, common patterns get extracted into reusable, testable hooks so the codebase gets cleaner over time, not messier.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="insight-card blue fade-in">
+      <h3>The practical implication for <em>Phase 1 hours</em></h3>
+      <p>Building to a scalable standard takes slightly longer than the Lovable approach — but not dramatically so. The Phase 1 estimate of <strong>120–140 hours</strong> accounts for this. The difference is not in how many features get built — it is in how they are built. Features written to a production standard take more deliberate effort upfront and dramatically less rework later.</p>
+      <p>The Supabase schema and the existing UI shell are real advantages. The platform does not need to be rebuilt from scratch — it needs the new work done right, and the highest-risk existing paths (financial flows, payment processing) reviewed and hardened. That is the Phase 1 scope.</p>
+    </div>
+  </section>
+
+  <!-- 08 PATH TO LAUNCH -->
+  <section class="section" id="engagement">
+    <div class="section-header fade-in">
+      <div class="section-num">08</div>
       <div class="section-title-wrap">
         <span class="section-eyebrow">Recommended Build Sequence</span>
         <h2 class="section-title">Path to Launch</h2>
