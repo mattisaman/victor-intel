@@ -1265,10 +1265,10 @@
               <li>create-subscription-checkout edge function present</li>
               <li>check-subscription + create-stripe-portal-session present</li>
               <li>Hardcoded price ID: price_1SMVSzDe82GWO0CJNDa8B0eh</li>
-              <li class="highlight">Single flat plan: Victor Pro at $19.99/mo (NOT our tiered model)</li>
+              <li class="highlight">Single flat-plan placeholder, coded but not enabled</li>
               <li>PLATFORM_POSTURE = "free_beta" kills all enforcement</li>
             </ul>
-            <div class="mc-note warn"><strong>Activation complexity:</strong> Changing posture is 1 line. But implementing our tiered pricing model (Starter/Pro/Scale/Enterprise) requires creating Stripe prices, updating price IDs, and adding enforcement logic in RouteGuard. Estimated: <strong>20–40 hours</strong>.</div>
+            <div class="mc-note warn"><strong>Activation complexity:</strong> Changing posture is 1 line. Implementing a real subscription model requires creating Stripe prices, wiring price IDs, and adding enforcement logic in RouteGuard. The pricing structure itself is a business decision to make together, not a code task. Estimated: <strong>20–40 hours</strong>.</div>
           </div>
         </div>
 
@@ -1339,9 +1339,9 @@
           </div>
           <div class="mc-body">
             <ul class="mc-features">
-              <li>No Starter/Professional/Scale/Enterprise tiers exist in code</li>
-              <li>Current code has a single flat $19.99/month plan (not live)</li>
-              <li class="highlight">The pricing model in pricing_and_valuation.md has not been implemented anywhere in the codebase</li>
+              <li>No real subscription tiers exist in code yet</li>
+              <li>Current code has only a single flat-plan placeholder (not live)</li>
+              <li class="highlight">No production billing model has been implemented in the codebase yet</li>
             </ul>
           </div>
         </div>
@@ -1386,12 +1386,12 @@
       <div class="section-title-wrap">
         <span class="section-eyebrow">Monetization State</span>
         <h2 class="section-title">What Is and Isn't Making Money</h2>
-        <p class="section-desc">Stripe is configured in live mode. There is a clear, documented path to first revenue: a kill-switch flip plus the pricing model implementation.</p>
+        <p class="section-desc">Stripe is configured in live mode. There is a clear, documented path to first revenue: a kill-switch flip plus implementing the subscription billing model.</p>
       </div>
     </div>
 
     <div class="highlight-box red fade-in">
-      <strong>Key finding:</strong> Stripe is configured in LIVE mode. The infrastructure is in place for real payment processing. The platform is currently set to free beta, with payment processing configured as at-cost passthrough (no markup taken). The first revenue flip requires implementing the tiered pricing model and changing the platform posture from beta to paid.
+      <strong>Key finding:</strong> Stripe is configured in LIVE mode. The infrastructure is in place for real payment processing. The platform is currently set to free beta, with payment processing configured as at-cost passthrough (no markup taken). The first revenue flip requires implementing the subscription billing model and changing the platform posture from beta to paid.
     </div>
 
     <div class="table-wrap fade-in">
@@ -1415,7 +1415,7 @@
             <td class="cell-name">Stripe Subscription Billing</td>
             <td><span class="status-pill pill-amber">Coded · Kill-Switch</span></td>
             <td class="cell-muted">$0 (free_beta posture)</td>
-            <td class="cell-muted">Change PLATFORM_POSTURE + implement tiered pricing: 20–40 hours</td>
+            <td class="cell-muted">Change PLATFORM_POSTURE + implement subscription billing: 20–40 hours</td>
           </tr>
           <tr class="row-warn">
             <td class="cell-name">Plaid Bank Feed</td>
@@ -1424,16 +1424,16 @@
             <td class="cell-muted">Add PLAID_CLIENT_ID + PLAID_SECRET: 2–4 hours</td>
           </tr>
           <tr class="row-critical">
-            <td class="cell-name">Tiered Subscription Model</td>
+            <td class="cell-name">Subscription Billing Model</td>
             <td><span class="status-pill pill-red">Not Built</span></td>
             <td class="cell-muted">$0</td>
-            <td class="cell-muted">Create Stripe prices for 4 tiers, update RouteGuard enforcement logic</td>
+            <td class="cell-muted">Create Stripe prices, wire RouteGuard enforcement logic</td>
           </tr>
           <tr class="row-critical">
             <td class="cell-name">Investor Portal Premium Features</td>
             <td><span class="status-pill pill-red">Portal Not Built</span></td>
             <td class="cell-muted">$0</td>
-            <td class="cell-muted">Build investor portal first, then gate behind Professional+ tier</td>
+            <td class="cell-muted">Build investor portal first, access gating handled by the billing model</td>
           </tr>
         </tbody>
       </table>
@@ -1445,17 +1445,17 @@
         <div class="ci-value amber">free_beta</div>
       </div>
       <div class="callout-item">
-        <div class="ci-label">Hardcoded Pro Price</div>
-        <div class="ci-value blue">$19.99/month flat</div>
+        <div class="ci-label">Billing Placeholder</div>
+        <div class="ci-value blue">Flat plan (not live)</div>
       </div>
       <div class="callout-item">
-        <div class="ci-label">Our Tiered Model</div>
+        <div class="ci-label">Production Billing Model</div>
         <div class="ci-value red">Not Implemented</div>
       </div>
     </div>
 
     <div class="highlight-box gold fade-in">
-      <strong>Revised billing estimate:</strong> The $19.99 flat plan hardcoded in the repo is not our model. Implementing the Starter ($49) / Professional ($99) / Scale ($199) / Enterprise ($399) tiered architecture with unit-based overages requires creating 4 Stripe price objects, updating price IDs throughout the codebase, and adding enforcement gates in RouteGuard. This is 20–40 hours of focused work, but it is the highest-leverage 20–40 hours in the entire engagement.
+      <strong>Billing estimate:</strong> The existing flat-plan placeholder is not wired for real subscriptions. Implementing a production billing model requires creating the Stripe price objects, wiring price IDs throughout the codebase, adding any usage-based logic, and adding enforcement gates in RouteGuard. This is 20–40 hours of focused work and among the highest-leverage work in Phase 1. The pricing strategy itself is a business conversation to have together, not a code decision.
     </div>
   </section>
 
@@ -1634,9 +1634,9 @@
         <div class="gap-body">
           <div class="gap-title">
             <span class="gap-hours">20–40 hrs</span>
-            Implement tiered pricing in Stripe and update codebase
+            Implement subscription billing in Stripe and update codebase
           </div>
-          <div class="gap-desc">Create 4 Stripe price objects for the Starter/Professional/Scale/Enterprise tiers. Update price IDs in the codebase. Add unit-based overage logic. Change PLATFORM_POSTURE. Update enforcement in RouteGuard. This is the highest-leverage block of work in the engagement.</div>
+          <div class="gap-desc">Create the Stripe price objects for the agreed plans, wire price IDs in the codebase, add any usage-based logic, change PLATFORM_POSTURE, and update enforcement in RouteGuard. The pricing structure itself is decided together as a business conversation. This is among the highest-leverage blocks of work in Phase 1.</div>
         </div>
       </li>
       <li class="gap-item critical">
@@ -1768,7 +1768,7 @@
         <div class="gap-num">H1</div>
         <div class="gap-body">
           <div class="gap-title">Tiered Billing Model</div>
-          <div class="gap-desc">Immediate. The kill-switch flip alone does nothing useful. The $19.99 flat plan is not the model. Implementing the tiered architecture is the prerequisite for any serious revenue conversation.</div>
+          <div class="gap-desc">Immediate. The kill-switch flip alone does nothing useful without a real billing model behind it. Implementing subscription billing is the prerequisite for any revenue conversation.</div>
         </div>
       </li>
       <li class="gap-item important">
@@ -1867,7 +1867,7 @@
         <ul>
           <li><strong>Financial flows.</strong> Rent processing, reconciliation, ledger writes, distribution logic. Every line that touches money gets written and reviewed to a production standard.</li>
           <li><strong>Investor portal.</strong> New build from scratch. Clean data model, typed queries, proper RLS from the first line.</li>
-          <li><strong>Subscription billing.</strong> The tiered pricing architecture and enforcement layer built cleanly, not patched onto the existing beta posture.</li>
+          <li><strong>Subscription billing.</strong> The billing model and enforcement layer built cleanly, not patched onto the existing beta posture.</li>
           <li><strong>Shared component and hook layer.</strong> As new features are added, common patterns get extracted into reusable, testable hooks so the codebase gets cleaner over time, not messier.</li>
         </ul>
       </div>
