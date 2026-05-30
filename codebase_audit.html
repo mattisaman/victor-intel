@@ -1045,7 +1045,36 @@
     </div>
 
     <div class="highlight-box fade-in">
-      <strong>How to read this assessment:</strong> These labels come from reading the actual code, not from running the app. "Built" means the module has real implementation behind it: substantive edge functions, queries against real tables, and a working data layer, not empty shells. What code review cannot confirm is that every flow works end to end, handles edge cases, and holds up under real data. That level of confidence comes only from hands-on testing, which is itself a line item in the path to launch. Treat "built" as a strong starting point that still needs human validation, not as a finished product.
+      <strong>How to read this assessment:</strong> These labels come from two layers of verification: reading the actual implementation code, and running the application locally (see the runtime panel below). "Built" means the module has real implementation behind it: substantive edge functions, queries against real tables, and a working data layer, not empty shells. What neither code review nor a local boot can confirm is that every authenticated business flow works end to end, handles edge cases, and holds up under real portfolio data. That level of confidence comes only from hands-on testing with live accounts, which is a line item in the path to launch. Treat "built" as a strong, verified starting point that still needs workflow validation, not as a finished product.
+    </div>
+
+    <!-- RUNTIME VERIFICATION -->
+    <div class="insight-card blue fade-in" style="margin-bottom:2rem;">
+      <h3>Runtime verification: <em>the app was actually run</em>, not just read</h3>
+      <p>Beyond reading the code, the application was installed, compiled, built, and booted locally to confirm it is a working build and not just plausible-looking source. Results:</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-top:1.25rem;">
+        <div style="background:var(--surface2);padding:1.25rem 1.5rem;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:#4ab87a;margin-bottom:0.75rem;">Confirmed Working</div>
+          <ul style="list-style:none;">
+            <li style="font-size:12.5px;color:var(--muted);padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:#4ab87a;flex-shrink:0;">✓</span>Production build compiles successfully</li>
+            <li style="font-size:12.5px;color:var(--muted);padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:#4ab87a;flex-shrink:0;">✓</span>TypeScript type-check passes clean</li>
+            <li style="font-size:12.5px;color:var(--muted);padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:#4ab87a;flex-shrink:0;">✓</span>Dev server boots, app renders (no white screen)</li>
+            <li style="font-size:12.5px;color:var(--muted);padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:#4ab87a;flex-shrink:0;">✓</span>Landing, pricing, and auth pages render correctly</li>
+            <li style="font-size:12.5px;color:var(--muted);padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:#4ab87a;flex-shrink:0;">✓</span>Auth guard enforces: protected route redirects to login</li>
+            <li style="font-size:12.5px;color:var(--muted);padding:0.3rem 0;display:flex;gap:0.5rem;line-height:1.5;"><span style="color:#4ab87a;flex-shrink:0;">✓</span>No console errors on load (Stripe, Router initialize cleanly)</li>
+          </ul>
+        </div>
+        <div style="background:var(--surface);padding:1.25rem 1.5rem;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.15em;text-transform:uppercase;color:var(--amber);margin-bottom:0.75rem;">Flagged During the Run</div>
+          <ul style="list-style:none;">
+            <li style="font-size:12.5px;color:var(--muted);padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--amber);flex-shrink:0;">!</span>Clean install fails; needs <code>--legacy-peer-deps</code> (date-fns version conflict)</li>
+            <li style="font-size:12.5px;color:var(--muted);padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--amber);flex-shrink:0;">!</span>TypeScript strict mode is off (strictNullChecks, noImplicitAny). Type-check passing is a weaker guarantee than it looks</li>
+            <li style="font-size:12.5px;color:var(--muted);padding:0.3rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--amber);flex-shrink:0;">!</span>Single 3.9MB JS bundle, no code splitting. Fine for beta, a performance item at scale</li>
+            <li style="font-size:12.5px;color:var(--muted);padding:0.3rem 0;display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--amber);flex-shrink:0;">!</span>Not tested: authenticated business flows (create property, tenant, rent, payment) require live accounts and production writes</li>
+          </ul>
+        </div>
+      </div>
+      <p style="margin-top:1.25rem;">Bottom line: this is a real, working application that compiles, boots, and enforces its auth boundaries. The remaining unknowns are the authenticated workflows with real data, which is exactly what the testing line item in the path to launch covers.</p>
     </div>
 
     <!-- BUILT -->
