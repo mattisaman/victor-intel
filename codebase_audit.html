@@ -972,7 +972,7 @@
       <div class="stack-item">
         <div class="si-layer">Payments</div>
         <div class="si-tech">Stripe <span class="live">LIVE</span></div>
-        <div class="si-note">@stripe/react-stripe-js. Live publishable key active. Rent payments processing in production now.</div>
+        <div class="si-note">@stripe/react-stripe-js. Live publishable key configured. Payment infrastructure ready for production.</div>
       </div>
       <div class="stack-item">
         <div class="si-layer">Bank Linking</div>
@@ -1357,7 +1357,7 @@
     </div>
 
     <div class="highlight-box red fade-in">
-      <strong>Critical finding:</strong> Stripe is in LIVE mode. Rent payments are processing in production right now. Victor earns $0 on these transactions (at-cost passthrough). The first revenue flip requires changing PLATFORM_POSTURE from "free_beta" and implementing the tiered pricing model.
+      <strong>Key finding:</strong> Stripe is configured in LIVE mode — the infrastructure is in place for real payment processing. The platform is currently in free beta, with Victor earning $0 on transactions (at-cost passthrough). The first revenue flip requires implementing the tiered pricing model and changing the platform posture from beta to paid.
     </div>
 
     <div class="table-wrap fade-in">
