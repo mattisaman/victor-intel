@@ -949,7 +949,7 @@
     </div>
 
     <div class="highlight-box red fade-in">
-      <strong>Critical Security Finding:</strong> The <code>.env</code> file contains a live Stripe publishable key (<code>pk_live_51SZiudG4...</code>) committed directly to the git repository. This is a security exposure risk. The Stripe secret key is correctly stored in Supabase edge function secrets, but the publishable key in version control still represents a risk surface that should be rotated and moved to environment configuration before any wider access to this repo is granted.
+      <strong>Security Note:</strong> The <code>.env</code> file contains a live Stripe publishable key (<code>pk_live_51SZiudG4...</code>) committed directly to the git repository. The Stripe secret key is correctly stored in Supabase edge function secrets. As a pre-launch step, the publishable key should be rotated and moved to environment configuration rather than version control.
     </div>
 
     <div class="stack-grid fade-in">
@@ -1028,7 +1028,7 @@
     </div>
 
     <div class="highlight-box gold fade-in">
-      <strong>What this confirms:</strong> The platform_audit.html estimated this was a Stage 2 shell. The codebase says otherwise. With 340 components, 117 edge functions, 379 migrations, live Stripe processing, and all Plaid code present, this is substantially closer to a production platform than the external audit suggested. The delta between the two assessments is the entire basis for revising the engagement scope in Section 07.
+      <strong>What this confirms:</strong> The platform_audit.html estimated this was a Stage 2 shell. The codebase says otherwise. With 340 components, 117 edge functions, 379 migrations, live Stripe processing, and all Plaid code present, this is substantially closer to a production platform than the external audit suggested. The delta between the two assessments is the entire basis for the revised build estimate in Section 07.
     </div>
   </section>
 
@@ -1621,16 +1621,16 @@
             <span class="gap-hours">4–8 hrs</span>
             Security audit: rotate live Stripe key, confirm no other secrets in git
           </div>
-          <div class="gap-desc">The <strong>pk_live_51SZiudG4...</strong> Stripe publishable key committed to <code>.env</code> in version control must be rotated and moved to environment configuration. A full scan of the git history for any other exposed credentials should be conducted before any external access is granted to this repository.</div>
+          <div class="gap-desc">The <strong>pk_live_51SZiudG4...</strong> Stripe publishable key committed to <code>.env</code> in version control should be rotated and moved to environment configuration. A full scan of the git history for any other exposed credentials is recommended as a standard pre-launch step.</div>
         </div>
       </li>
       <li class="gap-item important">
         <div class="gap-num">5</div>
         <div class="gap-body">
           <div class="gap-title">
-            Real user testing with Joe and Mitch
+            Owner testing with real data
           </div>
-          <div class="gap-desc">AI QA (Lovable's process) confirms structural correctness. It does not confirm workflow usability with real data. Joe and Mitch running actual scenarios — property creation, tenant onboarding, first rent payment, reconciliation — is the only honest QA that matters before beta users are onboarded.</div>
+          <div class="gap-desc">AI QA (Lovable's process) confirms structural correctness. It does not confirm workflow usability with real data. Running actual scenarios end-to-end — property creation, tenant onboarding, first rent payment, reconciliation — is the only honest QA that matters before beta users are onboarded.</div>
         </div>
       </li>
       <li class="gap-item important">
@@ -1778,16 +1778,16 @@
     <div class="section-header fade-in">
       <div class="section-num">07</div>
       <div class="section-title-wrap">
-        <span class="section-eyebrow">Revised Engagement Scope</span>
-        <h2 class="section-title">Two Layers, Two Conversations</h2>
-        <p class="section-desc">The engagement has two distinct phases that should not be conflated. Layer 1 is the MVP/beta launch sprint. Layer 2 is the full platform buildout from the competitor analysis and platform audit roadmap. Different scope, different timeline, different conversations.</p>
+        <span class="section-eyebrow">Recommended Build Sequence</span>
+        <h2 class="section-title">Path to Launch</h2>
+        <p class="section-desc">The build falls into two distinct phases. Phase 1 is the sprint to paid beta — activating what is already coded and closing the remaining gaps. Phase 2 is the full platform buildout from the competitor analysis and platform audit roadmap. Different scope, different timeline, different goals.</p>
       </div>
     </div>
 
     <!-- Layer 1 / Layer 2 split -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:2rem;" class="fade-in">
       <div style="background:var(--surface2);padding:2rem;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:0.6rem;">Layer 1 · This Engagement</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);margin-bottom:0.6rem;">Phase 1 · MVP / Beta Launch</div>
         <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:500;color:var(--text);margin-bottom:1rem;line-height:1.3;">MVP / Beta Launch Sprint</div>
         <ul style="list-style:none;">
           <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--gold);flex-shrink:0;">→</span>Plaid bank linking activated</li>
@@ -1802,7 +1802,7 @@
         </div>
       </div>
       <div style="background:var(--surface);padding:2rem;">
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue);margin-bottom:0.6rem;">Layer 2 · Partnership Phase</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--blue);margin-bottom:0.6rem;">Phase 2 · Full Platform Buildout</div>
         <div style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:500;color:var(--text);margin-bottom:1rem;line-height:1.3;">Full Platform Buildout</div>
         <ul style="list-style:none;">
           <li style="font-size:13px;color:var(--muted);padding:0.35rem 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;gap:0.5rem;line-height:1.5;"><span style="color:var(--blue);flex-shrink:0;">→</span>QuickBooks integration (~80–120 hrs)</li>
